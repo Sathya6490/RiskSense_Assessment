@@ -1,0 +1,170 @@
+@import 'Styles/variables';
+@mixin rounded-border {
+    padding: 8px;
+    border-radius: 20px;
+    font: {
+        weight: bold;
+        size:80%;
+    }
+}
+html {
+    height: 100%;
+  }
+  
+body {
+    min-height: 100%;
+    font-family: sans-serif;
+    margin: 0;
+}
+#app {
+    min-height: 100vh;
+}
+#content {
+    padding-top: 30px;
+    min-height: calc(100vh - 92px);
+    background: rgb(244,248,251);
+    .MuiToolbar-gutters{
+        padding-right: 0;
+    }
+    section{
+        flex-grow: 1;
+        display: flex;
+        input{
+            border: none;
+            margin-right: auto;
+        }
+        .search-btn{
+            min-width: 150px;
+            min-height: 64px;
+        }
+    }
+    
+}
+#header{
+    background: rgb(255, 255, 255);
+    box-shadow: none;
+    border-bottom: 1px solid #fbfafa;
+    padding: 0;
+    .MuiToolbar-gutters{
+        padding: 0;
+    }
+}
+.container{
+    color: #000;
+    flex-grow: 1;
+    @extend .d-flex;
+    .nav-list {
+        @extend .d-f-a-c;
+        margin-left: auto;
+        a{
+            text-decoration: none;
+            color:#000;
+            margin-left: 40px;
+            text-transform: uppercase;
+        }
+    }
+}
+#footer{
+    .company-logo{
+        color: #fff;
+    }
+    .container{
+        flex-direction: column;
+        margin-top:40px;
+    }
+    .title{
+        text-transform: uppercase;
+        color: #fff;
+        margin-bottom: 40px;
+        font-weight: bold;
+    }
+    .list-items{
+        @extend .d-flex;
+        flex-flow: column wrap;
+        span{
+            margin-bottom: 30px;
+        }
+    }
+    a{
+        text-decoration: none;
+        color:#fff;
+    }
+    .social-icons span{
+        color: #fff;
+        margin-right: 40px;
+    }
+}
+#rightSidebar, #LeftSidebar{
+    .MuiCardActions-root{
+        flex-flow: column;
+    }
+    .MuiCardMedia-media {
+        width: initial;
+    }
+    .container{
+        flex-flow: column;
+        .title{
+            border-bottom: 2px solid #dedede;
+            text-transform: uppercase;
+        }
+        .sub-title{
+            @extend .d-f-a-c;
+            h5{
+                margin-right: auto;
+            }
+        }
+        .description, image-dec{
+            font-size: 80%;
+            color: #777;
+            line-height: 1.5;
+            width: 95%;
+        }
+    }
+}
+#LeftSidebar{
+    .title {
+        @extend .d-f-a-c;
+        h4{
+            margin-right: auto;
+        }
+        span{
+        text-transform: capitalize;
+        }
+    }
+    .sub-title h5{
+        @extend .d-f-a-c;
+    }
+}
+#result{
+    margin: 0 30px;
+    .container{
+        padding: 0 30px;
+        display: inherit;
+        .content>div{
+            @extend .d-f-a-c;
+            .job-type{
+                color: #fff;
+                margin-right: auto;
+                background-color: #777;
+                margin-left: 5px;
+                @include rounded-border;
+            }
+            .skills{
+                @include rounded-border;
+                border: 1px solid #777;
+                margin-right: 5px;
+                margin-top: 20px;
+                margin-bottom: 30px;
+
+            }
+        }
+    }
+    
+}
+.d-flex {
+    display: flex;
+}
+.d-f-a-c{
+    display: flex;
+    align-items: center;
+}
