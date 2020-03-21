@@ -1,19 +1,20 @@
 import React from 'react';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import Grid from '@material-ui/core/Grid';
-import Chip from '@material-ui/core/Chip';
-import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Slider from '@material-ui/core/Slider';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import MultiSelectComponent from './MultiSelectComponent.js';
+
+
 const dummyFun = () => {}
 const value = [30, 100];
 function valuetext(value) {
     return `$${value}`;
   }
-const FilterComponent = ({defaultFilterValues, handleAvailability}) => (
+const FilterComponent = ({defaultFilterValues, handleAvailability, handleCountries, handleSkills, handleRate}) => (
     <Grid container id="LeftSidebar">
 
         <Grid item xs={12}>
@@ -28,29 +29,26 @@ const FilterComponent = ({defaultFilterValues, handleAvailability}) => (
                     <span>clear</span>
                 </div>
                 <div className="chips-filter">
-                    <Paper>
-                    <Chip
-                        label="Deletable"
-                        onDelete={dummyFun}
-                        variant="outlined"
-                    />
-                    </Paper>
+                    <MultiSelectComponent options={defaultFilterValues.skills} handleChange={handleSkills}/>
                 </div>
                 <div className="sub-title">
                     <h5>Availability<ErrorOutlineIcon/></h5>
                     <span>clear</span>
                 </div>
                 <div className="checkbox-filter">
-                    {defaultFilterValues.availability.map(jobType => (<FormControlLabel control={<Checkbox />} label={jobType}/>))}
+                    {defaultFilterValues.availability.map(jobType => (<FormControlLabel key={jobType.label} control={<Checkbox key={`${jobType.label}_checkBox`} checked={jobType.checked} onChange={handleAvailability} name={jobType.label}/>} label={jobType.label}/>))}
                 </div>
                 <div className="sub-title">
                     <h5>Pay rate/hr ($)</h5>
                     <span>clear</span>
                 </div>
                 <div className="progress-filter">
+                    {console.log(defaultFilterValues.rate)}
                     <Slider
-                        value={defaultFilterValues.rate}
-                        // onChange={handleChange}
+                        value={defaultFilterValues.rate.range}
+                        min={defaultFilterValues.rate.min}
+                        max={defaultFilterValues.rate.max}
+                        onChange={handleRate}
                         valueLabelDisplay="auto"
                         aria-labelledby="range-slider"
                         getAriaValueText={valuetext}
@@ -61,7 +59,15 @@ const FilterComponent = ({defaultFilterValues, handleAvailability}) => (
                     <span>clear</span>
                 </div>
                 <div className="dropdown-filter">
-                <TextField label="Enter state, province or country" variant="outlined" fullWidth />
+                <Autocomplete
+                id="grouped-demo"
+                options={defaultFilterValues.countries}
+                getOptionLabel={option => option}
+                style={{ width: 100 }}
+                renderInput={params => <TextField {...params} variant="outlined"/>}
+                onChange={handleCountries}
+                fullWidth
+                />
                 </div>
             </div>
         </section>

@@ -140,6 +140,15 @@ body {
     .container{
         padding: 0 30px;
         display: inherit;
+        .header{
+            display: flex;
+            h4{
+                margin-right: auto;
+            }
+            .sorting{
+                @extend .d-f-a-c;
+            }
+        }
         .content>div{
             @extend .d-f-a-c;
             .job-type{
@@ -160,11 +169,4 @@ body {
         }
     }
     
-}
-.d-flex {
-    display: flex;
-}
-.d-f-a-c{
-    display: flex;
-    align-items: center;
 }

@@ -12,14 +12,16 @@ const ResultComponent = ({data, handlePagination, totalCount, handleSortChange, 
            <div className="header">
                 <h4>{`Results(${totalCount})`}</h4>
                 <div className="sorting">
-                <Autocomplete
-                id="grouped-demo"
-                options={['Relavance', 'Rate']}
-                getOptionLabel={option => option}
-                style={{ width: 100 }}
-                renderInput={params => <TextField {...params} variant="outlined" />}
-                onChange={handleSortChange}
-                />
+                    <span>Sort By:</span>
+                    <Autocomplete
+                    id="grouped-demo"
+                    defaultValue='Relavance'
+                    options={['Relavance', 'Rate']}
+                    getOptionLabel={option => option}
+                    style={{ width: 200 }}
+                    renderInput={params => <TextField {...params} variant="outlined" />}
+                    onChange={handleSortChange}
+                    />
                 </div>
            </div>
            {data.map(jobList => (

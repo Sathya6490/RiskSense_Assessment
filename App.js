@@ -26,7 +26,7 @@ class App extends Component{
             defaultFilterValues: {
                 skills: [],
                 availability: [],
-                rate: [],
+                rate: {},
                 countries: [],
             },
             filters: {
@@ -57,8 +57,16 @@ class App extends Component{
            this.setState({
                data : resp.data, 
                defaultFilterValues,
+               loading: false,
            });
         }
+        })
+        .catch(e => {
+            if(this._isMounted) {
+                this.setState({
+                    loading: false,
+                })
+            }
         });
     }
     componentWillUnmount () {
@@ -74,7 +82,7 @@ class App extends Component{
         this.setState( prevState => ({
             filters: {
                 ...prevState.filters,
-                skills: [...prevState.filters.skills, value]
+                skills: value
             }
         }))
     }
@@ -86,11 +94,42 @@ class App extends Component{
             }
         }))
     }
-    _handleAvailability(e, value) {
-
+    _handleAvailability(e) {
+        const {defaultFilterValues} = this.state;
+        const updatedAvailability = defaultFilterValues.availability.map(jobType => {
+            if(jobType.label === event.target.name) {
+                return {
+                    label: event.target.name,
+                    checked: event.target.checked
+                }
+            }
+            return jobType;
+        })
+        this.setState( prevState => ({
+            filters: {
+                ...prevState.filters,
+                availability: updatedAvailability,
+            },
+            defaultFilterValues: {
+                ...prevState.defaultFilterValues,
+                availability: updatedAvailability,
+            }
+        }))
     }
     _handleRate(e,value) {
-
+        this.setState(prevState => ({
+            filters: {
+                ...prevState.filters,
+                rate: value
+            },
+            defaultFilterValues: {
+                ...prevState.defaultFilterValues,
+                rate: {
+                    ...defaultFilterValues.rate,
+                    range: value,
+                }
+            }
+        }))
     }
     _handleClear(e,type) {
         this.setState( prevState => {
@@ -120,11 +159,16 @@ class App extends Component{
 
     _getDefaultFilterValues(data) {
         const countries = data.reduce( (accum,job) => accum.includes(job.location) ? accum: [...accum, job.location], []);
-        const availability = data.reduce( (accum,job) => accum.includes(job.jobType) ? accum: [...accum, job.jobType], []);
+        const uniqueAvailability = data.reduce( (accum,job) => accum.includes(job.jobType) ? accum: [...accum, job.jobType], []);
+        const availability = uniqueAvailability.map(availability => ({label: availability, checked: false}));
         const allRates = data.reduce( (accum,job) => accum.includes(Number(job.salarymax)) ? accum: [...accum, Number(job.salarymax)], []);
-        const rate = [Math.min(...allRates), Math.max(...allRates)];
+        const rate = {
+            min: Math.min(...allRates), 
+            max: Math.max(...allRates),
+            range: [],
+        }
         const allSkills = data.map( ({requiredSkills}) => requiredSkills);
-        const skills = allSkills.reduce( (accum,skill) => accum.includes(skill)? accum: [...accum,skill], []);
+        const skills = allSkills.join(',').split(',').reduce( (accum,skill) => accum.includes(skill)? accum: [...accum,skill], []);
         return {
             skills,
             availability,
@@ -146,13 +190,14 @@ class App extends Component{
     }
     _getFilteredData() {
         const {data, filters} = this.state;
+        const selectedAvailability = filters.availability.filter(jobType => jobType.checked);
         const filteredData = data.filter(job => {
-            if(filters.skills.length === 0 && filters.countries === '' && filters.availability.length === 0 && filters.rate.length ===0 ) {
+            if(filters.skills.length === 0 && !filters.countries && filters.availability.length === 0 && filters.rate.length ===0 ) {
                 return job;
             }
             return (job.requiredSkills.split(',').find(skill => filters.skills.includes(skill)) ||
-                job.location.toLowerCase() === filters.countries.toLowerCase() ||
-                filters.availability.includes(job.jobType) ||
+            (job.location === filters.countries) ||
+            selectedAvailability.find(jobType => jobType.label === job.jobType) ||
                 job.salarymax >= filters.rate[0] && job.salarymax <= filters.rate[1]
         )
         });
@@ -162,11 +207,11 @@ class App extends Component{
        const filteredData = this._getFilteredData();
        const sortedData = this._getSortedData(filteredData);
        const paginatedData = this._getPaginatedData(sortedData);
-       console.log(this.state.defaultFilterValues);
        
       return(
          <div>
             <Header />
+            {!this.state.loading && (
             <div id="content">   
                 <SearchBar/> 
                 <Container maxWidth="lg">
@@ -183,6 +228,7 @@ class App extends Component{
                     </Grid>
                 </Container>
             </div>
+            )}
             <Footer/>
          </div>
       );
