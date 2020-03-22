@@ -14,7 +14,6 @@ const ResultComponent = ({data, handlePagination, totalCount, handleSortChange, 
                 <div className="sorting">
                     <span>Sort By:</span>
                     <Autocomplete
-                    id="grouped-demo"
                     defaultValue='Relavance'
                     options={['Relavance', 'Rate']}
                     getOptionLabel={option => option}
@@ -48,7 +47,7 @@ const ResultComponent = ({data, handlePagination, totalCount, handleSortChange, 
            </div>
 
            )) }
-           <Pagination count={totalCount/5} onChange={handlePagination} variant="outlined" shape="rounded" page={currentPageNumber}/>
+           {(totalCount/5 >= 1) && <Pagination count={Math.ceil(totalCount/5)} onChange={handlePagination} variant="outlined" shape="rounded" page={currentPageNumber}/>}
        </div>
    </Card>        
 );

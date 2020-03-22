@@ -7,10 +7,23 @@ import Slider from '@material-ui/core/Slider';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import MultiSelectComponent from './MultiSelectComponent.js';
+import Input from '@material-ui/core/Input';
 
+const getLabels = (min, max) => (
+     [
+    {
+      value: min,
+      label: `$${min}`,
+    },
+    {
+      value: max,
+      label: `$${max}`,
+    },
+]);
 const valuetext = value => `$${value}`;
 
-const FilterComponent = ({ defaultFilterValues, handleAvailability, handleCountries, handleSkills, handleRate, handleClear, handleClearAll, selectedSkills, selectedCountries }) => (
+
+const FilterComponent = ({ defaultFilterValues, handleAvailability, handleCountries, handleSkills, handleRate, handleClear, handleClearAll, selectedSkills, selectedCountries, handleRateInputChange }) => (
     <Grid container id="LeftSidebar">
         <Grid item xs={12}>
             <section>
@@ -38,12 +51,45 @@ const FilterComponent = ({ defaultFilterValues, handleAvailability, handleCountr
                         <span onClick={(e) => handleClear(e, 'rate')}>clear</span>
                     </div>
                     <div className="progress-filter">
+                        <div className="">
+                            <Grid item>
+                                <Input 
+                                    value={defaultFilterValues.rate.range[0]}
+                                    margin="dense"
+                                    variant="outlined"
+                                    onChange={(e) => handleRateInputChange(e, 'start')}
+                                    // onBlur={handleBlur}
+                                    inputProps={{
+                                    step: 100,
+                                    min: defaultFilterValues.rate.min,
+                                    max: defaultFilterValues.rate.max,
+                                    type: 'number',
+                                    'aria-labelledby': 'input-slider',
+                                    }}
+                                /> -- 
+                                <Input 
+                                    value={defaultFilterValues.rate.range[1]}
+                                    margin="dense"
+                                    variant="outlined"
+                                    onChange={(e) => handleRateInputChange(e, 'end')}
+                                    // onBlur={handleBlur}
+                                    inputProps={{
+                                    step: 100,
+                                    min: defaultFilterValues.rate.min,
+                                    max: defaultFilterValues.rate.max,
+                                    type: 'number',
+                                    'aria-labelledby': 'input-slider',
+                                    }}
+                                />
+                            </Grid>
+                        </div>
                         <Slider
                             value={defaultFilterValues.rate.range}
                             min={defaultFilterValues.rate.min}
                             max={defaultFilterValues.rate.max}
                             onChange={handleRate}
                             valueLabelDisplay="auto"
+                            marks={getLabels(defaultFilterValues.rate.min, defaultFilterValues.rate.max)}
                             aria-labelledby="range-slider"
                             getAriaValueText={valuetext}
                         />
@@ -54,12 +100,11 @@ const FilterComponent = ({ defaultFilterValues, handleAvailability, handleCountr
                     </div>
                     <div className="dropdown-filter">
                         <Autocomplete
-                            id="grouped-demo"
                             options={defaultFilterValues.countries}
                             value={selectedCountries}
                             getOptionLabel={option => option}
                             style={{ width: 100 }}
-                            renderInput={params => <TextField {...params} variant="outlined" />}
+                            renderInput={params => <TextField {...params} variant="outlined" fullWidth/>}
                             onChange={handleCountries}
                         />
                     </div>

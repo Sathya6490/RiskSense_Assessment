@@ -46,6 +46,7 @@ class App extends Component {
         this._handleCountries = this._handleCountries.bind(this);
         this._handleClear = this._handleClear.bind(this);
         this._handleClearAll = this._handleClearAll.bind(this);
+        this._handleRateInputChange = this._handleRateInputChange.bind(this);
         this._isMounted = false;
     }
 
@@ -149,6 +150,22 @@ class App extends Component {
                 }
             }
         }))
+    }
+    _handleRateInputChange(e, type) {
+        const inputValue = event.target.value;
+        const value = inputValue === '' ? inputValue: Number(inputValue);
+            this.setState(prevState => ({
+                defaultFilterValues: {
+                    ...prevState.defaultFilterValues,
+                    rate: {
+                        ...prevState.defaultFilterValues.rate,
+                        range: [
+                            type === 'start'? value: prevState.defaultFilterValues.rate.range[0],
+                            type === 'end' ? value: prevState.defaultFilterValues.rate.range[1]
+                        ],   
+                    }
+                }
+            }))
     }
     _handleClear(e, type) {
         this.setState(prevState => {
@@ -280,7 +297,7 @@ class App extends Component {
                                 <Grid item xs={3}>
                                     <FilterComponent handleAvailability={this._handleAvailability} handleSkills={this._handleSkills} handleCountries={this._handleCountries} handleRate={this._handleRate} defaultFilterValues={this.state.defaultFilterValues}
                                         handleClearAll={this._handleClearAll} handleClear={this._handleClear}
-                                        selectedSkills={this.state.filters.skills} selectedCountries={this.state.filters.countries} />
+                                        selectedSkills={this.state.filters.skills} selectedCountries={this.state.filters.countries} handleRateInputChange= {this._handleRateInputChange} />
                                 </Grid>
                                 <Grid item xs={6}>
                                     {paginatedData.length > 0 && <ResultComponent data={paginatedData} totalCount={sortedData.length} handlePagination={this._handlePagination} handleSortChange={this._handleSortChange} currentPageNumber={this.state.currentPageNumber}
