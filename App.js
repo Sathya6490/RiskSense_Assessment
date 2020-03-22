@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Header from './Components/Header.js';
 import Footer from './Components/Footer.js';
-import SearchBar from './Components/SearchBar.js';
+import SearchBar from './Components/SearchBar.jsx';
 import SideBarComponent from './Components/SideBarComponent.js';
 import FilterComponent from './Components/FilterComponent.js';
 import ResultComponent from './Components/ResultComponent.js';
@@ -12,16 +12,18 @@ import axios from 'axios';
 
 import "./Styles/style.scss";
 
-const baseApiUrl = 'http://localhost:9090/api';
+const baseApiUrl = 'http://localhost:9090/api/jobdescriptions';
 const jobsPerPage = 5;
-class App extends Component{
-    constructor (props){
+class App extends Component {
+    constructor(props) {
         super(props);
-        this.state = { 
+        this.searchBarComponent;
+        this.state = {
             loading: true,
-            data:[], 
-            paginatedData:[],
-             currentPageNumber: 1,
+            unfilteredData: [],
+            data: [],
+            paginatedData: [],
+            currentPageNumber: 1,
             sortedValue: 'relevance',
             defaultFilterValues: {
                 skills: [],
@@ -31,55 +33,80 @@ class App extends Component{
             },
             filters: {
                 skills: [],
-                availability: [],
-                rate: [],
                 countries: '',
             },
+            searchedValue: '',
         };
+        this._handleSearch = this._handleSearch.bind(this);
         this._handlePagination = this._handlePagination.bind(this);
         this._handleSortChange = this._handleSortChange.bind(this);
         this._handleSkills = this._handleSkills.bind(this);
         this._handleAvailability = this._handleAvailability.bind(this);
         this._handleRate = this._handleRate.bind(this);
         this._handleCountries = this._handleCountries.bind(this);
+        this._handleClear = this._handleClear.bind(this);
+        this._handleClearAll = this._handleClearAll.bind(this);
         this._isMounted = false;
     }
-    
-    componentDidMount () {
-        const {currentPageNumber} = this.state;
-        this._isMounted = true;
-        const axios = require ('axios');
 
-        axios.get(`${baseApiUrl}/jobdescriptions`)
-        .then( (resp) => {
-            const defaultFilterValues = this._getDefaultFilterValues(resp.data);
-            if(this._isMounted) {
-           this.setState({
-               data : resp.data, 
-               defaultFilterValues,
-               loading: false,
-           });
-        }
-        })
-        .catch(e => {
-            if(this._isMounted) {
-                this.setState({
-                    loading: false,
-                })
-            }
-        });
+    componentDidMount() {
+        const { currentPageNumber } = this.state;
+        this._isMounted = true;
+
+        axios.get(baseApiUrl)
+            .then((resp) => {
+                const defaultFilterValues = this._getDefaultFilterValues(resp.data);
+                if (this._isMounted) {
+                    this.setState({
+                        unfilteredData: resp.data,
+                        data: resp.data,
+                        defaultFilterValues,
+                        loading: false,
+                    });
+                }
+            })
+            .catch(e => {
+                if (this._isMounted) {
+                    this.setState({
+                        loading: false,
+                    })
+                }
+            });
     }
-    componentWillUnmount () {
+    componentWillUnmount() {
         this._isMounted = false;
     }
-    _handlePagination (e, value) { 
-        this.setState({currentPageNumber: value});
+    _handleSearch(e) {
+        const {unfilteredData} = this.state;
+        const value = this.searchBarComponent._getSearchInputValue();
+        if(value) {
+        this.setState({ loading: true });
+        axios.get(`${baseApiUrl}/search?query=${value}`)
+            .then((resp) => {
+                const defaultFilterValues = this._getDefaultFilterValues(resp.data);
+                this.setState({
+                    data: resp.data,
+                    defaultFilterValues,
+                    loading: false,
+                    searchedValue: value,
+                })
+            })
+        } else {
+            const defaultFilterValues = this._getDefaultFilterValues(unfilteredData);
+            this.setState({
+                data: unfilteredData,
+                defaultFilterValues,
+            })
+        }
+    } 
+    _handlePagination(e, value) {
+        this.setState({ currentPageNumber: value });
     }
     _handleSortChange(e, value) {
-        this.setState({sortedValue: value, currentPageNumber: 1})
+        this.setState({ sortedValue: value, currentPageNumber: 1 })
     }
-    _handleSkills(e,value) {
-        this.setState( prevState => ({
+    _handleSkills(e, value) {
+        this.setState(prevState => ({
             filters: {
                 ...prevState.filters,
                 skills: value
@@ -87,7 +114,7 @@ class App extends Component{
         }))
     }
     _handleCountries(e, value) {
-        this.setState( prevState => ({
+        this.setState(prevState => ({
             filters: {
                 ...prevState.filters,
                 countries: value,
@@ -95,9 +122,9 @@ class App extends Component{
         }))
     }
     _handleAvailability(e) {
-        const {defaultFilterValues} = this.state;
+        const { defaultFilterValues } = this.state;
         const updatedAvailability = defaultFilterValues.availability.map(jobType => {
-            if(jobType.label === event.target.name) {
+            if (jobType.label === event.target.name) {
                 return {
                     label: event.target.name,
                     checked: event.target.checked
@@ -105,70 +132,93 @@ class App extends Component{
             }
             return jobType;
         })
-        this.setState( prevState => ({
-            filters: {
-                ...prevState.filters,
-                availability: updatedAvailability,
-            },
+        this.setState(prevState => ({
             defaultFilterValues: {
                 ...prevState.defaultFilterValues,
                 availability: updatedAvailability,
             }
         }))
     }
-    _handleRate(e,value) {
+    _handleRate(e, value) {
         this.setState(prevState => ({
-            filters: {
-                ...prevState.filters,
-                rate: value
-            },
             defaultFilterValues: {
                 ...prevState.defaultFilterValues,
                 rate: {
-                    ...defaultFilterValues.rate,
+                    ...prevState.defaultFilterValues.rate,
                     range: value,
                 }
             }
         }))
     }
-    _handleClear(e,type) {
-        this.setState( prevState => {
-            if(type === 'countries') {
-                return {
-                    ...prevState.filters,
-                    [type]: '',
-                }
-            }
-            return {
-                ...prevState.filters,
-                [type]: [],
+    _handleClear(e, type) {
+        this.setState(prevState => {
+            switch (type) {
+                case 'skills':
+                    return {
+                        filters: {
+                            ...prevState.filters,
+                            [type]: []
+                        }
+                    }
+                case 'rate':
+                    return {
+                        defaultFilterValues: {
+                            ...prevState.defaultFilterValues,
+                            rate: {
+                                ...prevState.defaultFilterValues.rate,
+                                range: [prevState.defaultFilterValues.rate.min, prevState.defaultFilterValues.rate.max]
+                            }
+                        }
+                    }
+                case 'availability':
+                    return {
+                        defaultFilterValues: {
+                            ...prevState.defaultFilterValues,
+                            availability: prevState.defaultFilterValues.availability.map(jobType => ({ ...jobType, checked: false }))
+                        }
+                    }
+                default:
+                    return {
+                        filters: {
+                            ...prevState.filters,
+                            [type]: '',
+                        }
+                    }
             }
         })
     }
     _handleClearAll() {
-        this.setState({
+        this.setState(prevState => ({
             filters: {
                 skills: [],
-                availability: [],
-                rate: [],
                 countries: '',
+            },
+            defaultFilterValues: {
+                ...prevState.defaultFilterValues,
+                rate: {
+                    ...prevState.defaultFilterValues,
+                    range: [prevState.defaultFilterValues.rate.min, prevState.defaultFilterValues.rate.max],
+                },
+                availability: prevState.defaultFilterValues.availability.map(jobType => ({ ...jobType, checked: false }))
             }
-        })
+        }))
     }
 
 
     _getDefaultFilterValues(data) {
-        const countries = data.reduce( (accum,job) => accum.includes(job.location) ? accum: [...accum, job.location], []);
-        const uniqueAvailability = data.reduce( (accum,job) => accum.includes(job.jobType) ? accum: [...accum, job.jobType], []);
-        const availability = uniqueAvailability.map(availability => ({label: availability, checked: false}));
-        const allRates = data.reduce( (accum,job) => accum.includes(Number(job.salarymax)) ? accum: [...accum, Number(job.salarymax)], []);
+        const countries = data.reduce((accum, job) => accum.includes(job.location) ? accum : [...accum, job.location], []);
+        const uniqueAvailability = data.reduce((accum, job) => accum.includes(job.jobType) ? accum : [...accum, job.jobType], []);
+        const availability = uniqueAvailability.map(availability => ({ label: availability, checked: false }));
+        const allRates = data.reduce((accum, job) => accum.includes(Number(job.salarymax)) ? accum : [...accum, Number(job.salarymax)], []);
+        const minRate = Math.min(...allRates);
+        const maxRate = Math.max(...allRates);
         const rate = {
-            min: Math.min(...allRates), 
-            max: Math.max(...allRates),
-            range: [],
+            min: minRate,
+            max: maxRate,
+            range: [minRate, maxRate],
         }
-        const allSkills = data.map( ({requiredSkills}) => requiredSkills);
-        const skills = allSkills.join(',').split(',').reduce( (accum,skill) => accum.includes(skill)? accum: [...accum,skill], []);
+        const allSkills = data.map(({ requiredSkills }) => requiredSkills);
+        const skills = allSkills.join(',').split(',').reduce((accum, skill) => accum.includes(skill) ? accum : [...accum, skill], []);
         return {
             skills,
             availability,
@@ -177,61 +227,75 @@ class App extends Component{
         }
     }
     _getPaginatedData(data) {
-        const {currentPageNumber} = this.state;
-        const page = currentPageNumber -1;     
+        const { currentPageNumber } = this.state;
+        const page = currentPageNumber - 1;
         return data.slice(page * jobsPerPage, page * jobsPerPage + jobsPerPage);
     }
-    _getSortedData (data) {
-        const {sortedValue} = this.state;
-        if(sortedValue==='Rate') {
-            return [...data].sort( (a,b) => a.salarymax - b.salarymax);
+    _getSortedData(data) {
+        const { sortedValue } = this.state;
+        if (sortedValue === 'Rate') {
+            return [...data].sort((a, b) => a.salarymax - b.salarymax);
         }
         return data;
     }
     _getFilteredData() {
-        const {data, filters} = this.state;
-        const selectedAvailability = filters.availability.filter(jobType => jobType.checked);
-        const filteredData = data.filter(job => {
-            if(filters.skills.length === 0 && !filters.countries && filters.availability.length === 0 && filters.rate.length ===0 ) {
-                return job;
-            }
-            return (job.requiredSkills.split(',').find(skill => filters.skills.includes(skill)) ||
-            (job.location === filters.countries) ||
-            selectedAvailability.find(jobType => jobType.label === job.jobType) ||
-                job.salarymax >= filters.rate[0] && job.salarymax <= filters.rate[1]
-        )
-        });
+        const { data, filters, defaultFilterValues } = this.state;
+        const selectedAvailability = defaultFilterValues.availability.filter(jobType => jobType.checked);
+        const isRangeSelected = defaultFilterValues.rate.range[0] > 0 || defaultFilterValues.rate.range[1] > 0;
+        if (filters.skills.length === 0 && !filters.countries && selectedAvailability.length === 0 && !isRangeSelected) {
+            return data;
+        }
+        let filteredData = data;
+        if (filters.skills.length !== 0) {
+            filteredData = filteredData.filter(skillJob => skillJob.requiredSkills.split(',').find(skill => filters.skills.includes(skill)));
+        }
+        if (filters.countries) {
+            filteredData = filteredData.filter(locationJob => locationJob.location === filters.countries);
+        }
+        if (selectedAvailability.length !== 0) {
+            filteredData = filteredData.filter(availabilityJob => selectedAvailability.find(jobType => jobType.label === availabilityJob.jobType));
+        }
+        if (isRangeSelected) {
+            filteredData = filteredData.filter(rateJob => Number(rateJob.salarymax) >= defaultFilterValues.rate.range[0] && Number(rateJob.salarymax) <= defaultFilterValues.rate.range[1]);
+        }
         return filteredData;
     }
-    render(){
-       const filteredData = this._getFilteredData();
-       const sortedData = this._getSortedData(filteredData);
-       const paginatedData = this._getPaginatedData(sortedData);
-       
-      return(
-         <div>
-            <Header />
-            {!this.state.loading && (
-            <div id="content">   
-                <SearchBar/> 
-                <Container maxWidth="lg">
-                    <Grid container>
-                        <Grid item xs={3}>
-                            <FilterComponent handleAvailability={this._handleAvailability} handleSkills={this._handleSkills} handleCountries={this._handleCountries} handleRate={this._handleRate} defaultFilterValues={this.state.defaultFilterValues}/>
-                        </Grid>
-                        <Grid item xs={6}>
-                            {paginatedData.length > 0 && <ResultComponent data={paginatedData} totalCount = {sortedData.length} handlePagination = {this._handlePagination} handleSortChange={this._handleSortChange} currentPageNumber={this.state.currentPageNumber} />}
-                        </Grid>
-                        <Grid item xs={3}>
-                            <SideBarComponent/>
-                        </Grid>
-                    </Grid>
-                </Container>
+    render() {
+        const filteredData = !this.state.loading ? this._getFilteredData() : [];
+        const sortedData = this._getSortedData(filteredData);
+        const paginatedData = this._getPaginatedData(sortedData);
+
+        return (
+            <div>
+                <Header />
+                {!this.state.loading && (
+                    <div id="content">
+                        <SearchBar ref={ref => {
+                            if (ref) {
+                                this.searchBarComponent = ref;
+                            }
+                        }} handleSearch={this._handleSearch} searchedValue={this.state.searchedValue} />
+                        <Container maxWidth="lg">
+                            <Grid container>
+                                <Grid item xs={3}>
+                                    <FilterComponent handleAvailability={this._handleAvailability} handleSkills={this._handleSkills} handleCountries={this._handleCountries} handleRate={this._handleRate} defaultFilterValues={this.state.defaultFilterValues}
+                                        handleClearAll={this._handleClearAll} handleClear={this._handleClear}
+                                        selectedSkills={this.state.filters.skills} selectedCountries={this.state.filters.countries} />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    {paginatedData.length > 0 && <ResultComponent data={paginatedData} totalCount={sortedData.length} handlePagination={this._handlePagination} handleSortChange={this._handleSortChange} currentPageNumber={this.state.currentPageNumber}
+                                    />}
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <SideBarComponent />
+                                </Grid>
+                            </Grid>
+                        </Container>
+                    </div>
+                )}
+                <Footer />
             </div>
-            )}
-            <Footer/>
-         </div>
-      );
-   }
+        );
+    }
 }
 export default App;

@@ -126,7 +126,7 @@ const Listbox = styled('ul')`
   }
 `;
 
-const MultiSelectComponent = ({options, handleChange}) => {
+const MultiSelectComponent = ({options, handleChange, selectedSkills}) => {
   const {
     getRootProps,
     getInputProps,
@@ -141,6 +141,7 @@ const MultiSelectComponent = ({options, handleChange}) => {
     id: 'customized-hook-demo',
     multiple: true,
     options,
+    value: selectedSkills,
     getOptionLabel: option => option,
     onChange: handleChange
   });
