@@ -262,3 +262,18 @@ body {
     
 }
 
+#nodata{
+    margin: 0 30px;
+    .MuiCard-root{
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-flow: column;
+        .MuiSvgIcon-root{
+            width: 100px;
+            height: 100px;
+            opacity: .1;
+        }
+    }
+}

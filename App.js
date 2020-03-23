@@ -301,9 +301,10 @@ class App extends Component {
                                         selectedSkills={this.state.filters.skills} selectedCountries={this.state.filters.countries} handleRateInputChange= {this._handleRateInputChange} />
                                 </Grid>
                                 <Grid item xs={6}>
-                                    {paginatedData.length > 0 && <ResultComponent data={paginatedData} totalCount={sortedData.length} handlePagination={this._handlePagination} handleSortChange={this._handleSortChange} currentPageNumber={this.state.currentPageNumber}
-                                    />}
-                                    {paginatedData.length <= 0 && <NoDataComponent/>}
+                                    {paginatedData.length > 0 
+                                    ? <ResultComponent data={paginatedData} totalCount={sortedData.length} handlePagination={this._handlePagination} handleSortChange={this._handleSortChange} currentPageNumber={this.state.currentPageNumber}
+                                    />
+                                    : <NoDataComponent/>}
                                 </Grid>
                                 <Grid item xs={3}>
                                     <SideBarComponent />
