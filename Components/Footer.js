@@ -18,7 +18,7 @@ const Footer = () => (
                     </div>
                 </Grid>
                 <Grid item xs={2}>
-                    <div className="container">
+                    <div className="container" style={{marginLeft:'30px'}}>
                         <div className="title">Talent</div>
                         <div className="list-items">
                             <span><a href="#">How it works</a></span>

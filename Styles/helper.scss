@@ -1,0 +1,30 @@
+$primary-color: #4ea5f7;
+$secondary-color: #52af77;
+.d-flex {
+    display: flex;
+}
+.d-f-a-c{
+    display: flex;
+    align-items: center;
+}
+.col-green{
+    color: $secondary-color;
+}
+.col-blue{
+    color: $primary-color;
+}
+.bg-blue{
+    background-color: $primary-color;
+}
+.bg-green{
+    background-color: $secondary-color;
+}
+.a-i-b{
+    align-items: baseline;
+}
+.a-i-f-e{
+    align-items: end;
+}
+.font-small{
+    font-size: 90%;
+}

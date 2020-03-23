@@ -6,6 +6,7 @@ import SearchBar from './Components/SearchBar.jsx';
 import SideBarComponent from './Components/SideBarComponent.js';
 import FilterComponent from './Components/FilterComponent.js';
 import ResultComponent from './Components/ResultComponent.js';
+import NoDataComponent from './Components/NoDataComponent.js'
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import axios from 'axios';
@@ -302,6 +303,7 @@ class App extends Component {
                                 <Grid item xs={6}>
                                     {paginatedData.length > 0 && <ResultComponent data={paginatedData} totalCount={sortedData.length} handlePagination={this._handlePagination} handleSortChange={this._handleSortChange} currentPageNumber={this.state.currentPageNumber}
                                     />}
+                                    {paginatedData.length <= 0 && <NoDataComponent/>}
                                 </Grid>
                                 <Grid item xs={3}>
                                     <SideBarComponent />

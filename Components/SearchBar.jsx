@@ -35,8 +35,8 @@ class SearchBar extends React.Component {
                                 this.searchInput = input
                                 }
                             }
-                         } value={this.state.searchValue} type="text" name="searchTextField" onChange={this._handleSearchText} placeholder="Type here to search"/>
-                        <Button type="submit" varient="contained" color="primary" className="search-btn" onClick={this.props.handleSearch}>Search</Button>
+                         } value={this.state.searchValue} type="text" name="searchTextField" onChange={this._handleSearchText} placeholder="Search by keywords(PHP, .NET, graphic design, etc)" style={{border:'none'}}/>
+                        <Button type="submit" variant="contained" color="primary" className="search-btn" onClick={this.props.handleSearch}>Search</Button>
                     </section>
                     </Toolbar>
                 </AppBar>

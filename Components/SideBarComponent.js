@@ -23,12 +23,12 @@ const SideBarComponent = () => (
             <div className="container">
                 <div className="sub-title" style={{flexFlow:'column'}}>
                     <h4 style={{marginRight : 'inherit', marginBottom: '10px'}}>Track live on Risksense</h4>
-                    <span className="image-dec">Lorem Ipsum is simply dummy text</span>
+                    <span className="image-dec font-small">Pay only for the hours worked</span>
                 </div>
             </div>
         <CardActions>
-            <Button type="submit" varient="contained" color="primary">Sign Up</Button>
-            <Button size="small" color="primary">Learn More...</Button>
+            <Button type="submit" variant="contained" color="primary">Sign Up</Button>
+            <Button size="small" color="primary">Learn more...</Button>
         </CardActions>
     </Card>
 

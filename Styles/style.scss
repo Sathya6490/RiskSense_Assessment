@@ -1,11 +1,7 @@
-@import 'Styles/variables';
+@import 'Styles/helper';
 @mixin rounded-border {
-    padding: 8px;
+    padding: 6px 10px;
     border-radius: 20px;
-    font: {
-        weight: bold;
-        size:80%;
-    }
 }
 html {
     height: 100%;
@@ -13,14 +9,23 @@ html {
   
 body {
     min-height: 100%;
-    font-family: sans-serif;
+    font-family: Roboto;
     margin: 0;
 }
 #app {
     min-height: 100vh;
 }
+/* Properties Overrided */
+
+.MuiButton-textPrimary{
+    color: $primary-color;
+}
+.MuiPaginationItem-textPrimary.Mui-selected {
+    background-color: $primary-color;
+}
 #content {
     padding-top: 30px;
+    padding-bottom: 150px;
     min-height: calc(100vh - 92px);
     background: rgb(244,248,251);
     .MuiToolbar-gutters{
@@ -30,12 +35,16 @@ body {
         flex-grow: 1;
         display: flex;
         input{
-            border: none;
             margin-right: auto;
+            width: 100%;
+            &:focus{
+                outline: none;
+            }
         }
         .search-btn{
             min-width: 150px;
             min-height: 64px;
+            background-color: $primary-color;
         }
     }
     
@@ -101,6 +110,9 @@ body {
     .MuiCardMedia-media {
         width: initial;
     }
+    .MuiCardActionArea-root:hover .MuiCardActionArea-focusHighlight {
+        opacity: 0;
+    }
     .container{
         flex-flow: column;
         .title{
@@ -119,6 +131,19 @@ body {
             line-height: 1.5;
             width: 95%;
         }
+        
+    }
+    .MuiButton-root{
+        text-transform: initial;
+    }
+    .MuiButton-containedPrimary {
+        background-color:$primary-color;
+        margin: 20px 0;
+        min-width: 130px;
+    }
+    .MuiButton-textPrimary{
+        color: $primary-color;
+        margin-bottom: 30px;
     }
 }
 #LeftSidebar{
@@ -134,11 +159,49 @@ body {
     .sub-title h5{
         @extend .d-f-a-c;
     }
+    .checkbox-filter{
+        flex-wrap: wrap;
+        label{
+            width: 100%;
+        }
+        .MuiCheckbox-colorSecondary.Mui-checked{
+            color: $secondary-color;
+        }
+    }
+    .progress-filter{
+        .MuiSlider-root {
+            color: $secondary-color;
+            >.MuiSlider-markLabel{
+                margin: 15px;
+            }
+            >.MuiSlider-markLabel:last-child{
+                margin: 15px 0px 0 -10px;
+            }
+        }
+        .MuiSlider-rail, 
+        .MuiSlider-track,
+        .MuiSlider-mark{
+            height: 5px;
+        }
+        .MuiSlider-thumb{
+            width: 14px;
+            height: 14px;
+        }
+        .MuiInput-underline:before{
+            width: 55px;
+            height: 30px;
+            border:1px solid rgba(0, 0, 0, 0.42);
+            border-radius: 5px;
+        }
+        .MuiInputBase-input{
+            text-align: center;
+        }
+    }
 }
 #result{
     margin: 0 30px;
     .container{
-        padding: 0 30px;
+        padding: 30px;
         display: inherit;
         .header{
             display: flex;
@@ -149,24 +212,53 @@ body {
                 @extend .d-f-a-c;
             }
         }
-        .content>div{
+        
+        .content{
+            >div{
             @extend .d-f-a-c;
+            .MuiSvgIcon-root{
+                font-size: 1rem;
+            }
+            
             .job-type{
                 color: #fff;
                 margin-right: auto;
-                background-color: #777;
                 margin-left: 5px;
                 @include rounded-border;
+                font: {
+                    weight: bold;
+                    size:80%;
+                }
             }
-            .skills{
-                @include rounded-border;
-                border: 1px solid #777;
-                margin-right: 5px;
-                margin-top: 20px;
-                margin-bottom: 30px;
-
+            &.border{
+                border-bottom: 2px solid #dedede;
+                .skills{
+                    @include rounded-border;
+                    border: 1px solid #777;
+                    margin-right: 5px;
+                    margin-top: 20px;
+                    margin-bottom: 30px;
+    
+                }
+            }}
+            
+        }
+        .MuiPagination-ul{
+            width: 100%;
+            justify-content: center;
+            li{
+               &:first-child{
+                   margin-right: auto;
+               } 
+               &:last-child{
+                   margin-left: auto;
+               }
             }
+        }
+        .MuiPaginationItem-textPrimary.Mui-selected {
+            background-color: $primary-color;
         }
     }
     
 }
+
