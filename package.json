@@ -35,4 +35,5 @@
     "styled-components": "^5.0.1",
     "webpack": "^4.42.0"
   }
+  "proxy": "http://localhost:9090"
 }
