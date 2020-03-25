@@ -171,13 +171,16 @@ body {
     .progress-filter{
         .MuiSlider-root {
             color: $secondary-color;
-            >.MuiSlider-markLabel{
+            
+        }
+        
+        >.MuiSlider-markLabel:first-child{
                 margin: 15px;
             }
-            >.MuiSlider-markLabel:last-child{
-                margin: 15px 0px 0 -10px;
+            .MuiSlider-markLabel:last-child{
+            margin: 15px 0px 0 -10px;
             }
-        }
+        
         .MuiSlider-rail, 
         .MuiSlider-track,
         .MuiSlider-mark{
